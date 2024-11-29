@@ -16,5 +16,8 @@
 		"IntersectionObserver"
 	],
 	"author": "sidecity.li",
-	"license": "ISC"
+	"license": "ISC",
+	"publishConfig": {
+		"access": "public"
+	}
 }
