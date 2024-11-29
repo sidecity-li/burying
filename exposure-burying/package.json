@@ -1,0 +1,20 @@
+{
+	"main": "dist/index.es.js",
+	"types": "dist/index.d.ts",
+	"peerDependencies": {
+		"react": "^18.3.1"
+	},
+	"files": [
+		"dist"
+	],
+	"name": "@burying/exposure-burying",
+	"version": "1.0.0",
+	"description": "基于react的曝光埋点",
+	"keywords": [
+		"基于react的曝光埋点",
+		"useEffect",
+		"IntersectionObserver"
+	],
+	"author": "sidecity.li",
+	"license": "ISC"
+}
