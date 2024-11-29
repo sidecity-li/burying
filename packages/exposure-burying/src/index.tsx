@@ -137,7 +137,7 @@ export default function generateExposureComponent({
           }
         );
         observer.observe(containerRef.current!);
-        return () => observer.unobserve(containerRef.current as HTMLElement);
+        return () => observer.disconnect();
       }, []);
 
       const dataSet = getDataSet(data);
