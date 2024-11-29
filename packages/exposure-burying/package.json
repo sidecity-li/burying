@@ -8,6 +8,9 @@
     "useEffect",
     "IntersectionObserver"
   ],
+  "scripts": {
+    "build": "vite build"
+  },
   "author": "sidecity.li",
   "license": "ISC",
   "peerDependencies": {
