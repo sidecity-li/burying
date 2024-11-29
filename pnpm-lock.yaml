@@ -58,8 +58,14 @@ importers:
   demo:
     dependencies:
       '@burying/exposure-burying':
-        specifier: ^1.0.0
+        specifier: workspace:^
         version: link:../packages/exposure-burying
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
 
   packages/exposure-burying:
     dependencies:
