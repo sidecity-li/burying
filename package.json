@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start:demo": "npm run dev --dir demo",
     "dev": "vite --config ./demo/vite.config.ts",
     "build:exposure-burying": "rimraf exposure-burying && vite build --config ./packages/exposure-burying/vite.config.ts && tsc --project ./packages/exposure-burying && node scripts/copy-packageJson.js exposure-burying",
     "lint": "eslint .",
