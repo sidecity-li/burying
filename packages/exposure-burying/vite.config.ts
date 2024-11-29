@@ -10,8 +10,9 @@ export default defineConfig({
   plugins: [react()],
   build: {
     // 如下是默认值
-    // target: "modules",
+    // target: "es5",
     minify: false,
+    sourcemap: true,
     lib: {
       entry: entry,
       formats: ["es"],
@@ -21,7 +22,6 @@ export default defineConfig({
       external: ["react", "react/jsx-runtime"],
       output: {
         dir: "./exposure-burying/dist",
-        sourcemap: true,
       },
     },
   },
