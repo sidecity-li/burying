@@ -9,8 +9,7 @@
     "react-dom": "^18.3.1"
   },
   "scripts": {
-    "dev": "vite",
-    "aaa": "node ./aaa.js"
+    "dev": "vite"
   },
   "keywords": [],
   "author": "",
