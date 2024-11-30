@@ -18,10 +18,7 @@ export type GenerateExposureContainerProps = {
 };
 
 export type ExposureComponentProps = Partial<
-  Omit<
-    GenerateExposureContainerProps,
-    "triggerType" | "exposeFn" | "compareEvent"
-  >
+  Omit<GenerateExposureContainerProps, "exposeFn" | "compareEvent">
 > & {
   data: DataType;
 };
