@@ -13,7 +13,7 @@ export type GenerateExposureContainerProps = {
     exposeFn: (data: DataType) => void;
     compareEvent?: (data1: DataType, data2: DataType) => boolean;
 };
-export type ExposureComponentProps = Partial<Omit<GenerateExposureContainerProps, "triggerType" | "exposeFn" | "compareEvent">> & {
+export type ExposureComponentProps = Partial<Omit<GenerateExposureContainerProps, "exposeFn" | "compareEvent">> & {
     data: DataType;
 };
 export type UseEffectExposureComponentProps = ExposureComponentProps & {
