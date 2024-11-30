@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
-import generateExposureComponent from "@burying/exposure-burying";
+import generateExposureComponent, { DataType } from "@burying/exposure-burying";
 
 const [ExposureComponent, IntersectionExposureComponent] =
   generateExposureComponent({
     debounce: 800,
-    exposeFn: (parmas: any) => {
+    exposeFn: (parmas: DataType) => {
       console.log(parmas, "parmas");
     },
   });
