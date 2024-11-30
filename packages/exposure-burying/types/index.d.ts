@@ -14,13 +14,16 @@ export type GenerateExposureContainerProps = {
     compareEvent?: (data1: DataType, data2: DataType) => boolean;
 };
 export type ExposureComponentProps = Partial<Omit<GenerateExposureContainerProps, "triggerType" | "exposeFn" | "compareEvent">> & {
-    children: ReactNode;
     data: DataType;
 };
-export type UseEffectExposureComponentProps = ExposureComponentProps;
+export type UseEffectExposureComponentProps = ExposureComponentProps & {
+    children?: ReactNode;
+};
 export type IntersectionObserverExposureComponentProps = ExposureComponentProps & {
     threshold?: number;
     display?: "block" | "inline";
+} & {
+    children: ReactNode;
 };
 export type DataSetType<T extends Record<string, unknown>> = {
     [K in keyof T as `data-${K extends string ? K : never}`]: T[K];
