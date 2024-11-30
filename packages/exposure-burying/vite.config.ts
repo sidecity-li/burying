@@ -23,15 +23,7 @@ export default defineConfig({
       plugins: [
         getBabelOutputPlugin({
           allowAllFormats: true,
-          presets: [
-            [
-              "@babel/preset-env",
-              {
-                useBuiltIns: "usage",
-                corejs: 3,
-              },
-            ],
-          ],
+          configFile: path.resolve(__dirname, './babel.config.js')
         }),
       ],
       external: ["react", "react/jsx-runtime"],
