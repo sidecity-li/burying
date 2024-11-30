@@ -27,9 +27,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "@rollup/plugin-babel": "^6.0.4"
-  },
-  "dependencies": {
+    "@rollup/plugin-babel": "^6.0.4",
     "@babel/preset-env": "^7.26.0"
-  }
+  },
+  "dependencies": {}
 }
