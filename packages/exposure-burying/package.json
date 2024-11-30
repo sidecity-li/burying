@@ -26,8 +26,9 @@
     "access": "public"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.26.0",
-    "@rollup/plugin-babel": "^6.0.4",
-    "@vitejs/plugin-legacy": "^6.0.0"
+    "@rollup/plugin-babel": "^6.0.4"
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.26.0"
   }
 }
