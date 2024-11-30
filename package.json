@@ -7,7 +7,7 @@
     "start:demo": "npm run dev -C demo",
     "dev": "vite --config ./demo/vite.config.ts",
     "build:exposure-burying": "npm run build -C packages/exposure-burying",
-    "lint": "eslint .",
+    "lint": "eslint 'packages/**/*' ",
     "preview": "vite preview"
   },
   "dependencies": {},
