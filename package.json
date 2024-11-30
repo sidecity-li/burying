@@ -7,7 +7,8 @@
     "start:demo": "npm run dev -C demo",
     "build:exposure-burying": "npm run build -C packages/exposure-burying",
     "lint": "eslint 'packages/**/*' ",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "publish:exposure-burying": "npm run publish -C packages/exposure-burying"
   },
   "dependencies": {},
   "devDependencies": {
