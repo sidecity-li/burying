@@ -4,6 +4,6 @@
     "jsx": "react-jsx",
     "emitDeclarationOnly": true,
     "declaration": true,
-    "outDir": "../../exposure-burying/dist"
+    "outDir": "types"
   }
 }
