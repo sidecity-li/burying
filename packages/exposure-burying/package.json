@@ -28,7 +28,8 @@
   },
   "devDependencies": {
     "@rollup/plugin-babel": "^6.0.4",
-    "@babel/preset-env": "^7.26.0"
+    "@babel/preset-env": "^7.26.0",
+    "@babel/plugin-transform-runtime": "^7.25.9"
   },
   "dependencies": {}
 }
