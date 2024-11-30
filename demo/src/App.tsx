@@ -4,7 +4,7 @@ import generateExposureComponent from "@burying/exposure-burying";
 
 const [ExposureComponent, IntersectionExposureComponent] =
   generateExposureComponent({
-    debounce: 500,
+    debounce: 1500,
     exposeFn: (parmas: any) => {
       console.log(parmas, "parmas");
     },
@@ -18,7 +18,7 @@ function App() {
 
     setTimeout(() => {
       setLoading(false);
-    }, 300);
+    }, 1200);
   }, []);
 
   if (loading) {
@@ -34,6 +34,17 @@ function App() {
       >
         <p style={{ backgroundColor: "red" }}>useEffect 上报</p>
       </ExposureComponent>
+
+      <IntersectionExposureComponent
+        data={{
+          intersection: "777",
+          type: "Intersection",
+        }}
+      >
+        <p style={{ height: "1400px", backgroundColor: "green" }}>
+          Intersection 上报1
+        </p>
+      </IntersectionExposureComponent>
 
       <p style={{ height: "1700px" }}>111</p>
 
