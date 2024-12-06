@@ -1,0 +1,35 @@
+{
+  "name": "@burying/exposure-burying",
+  "version": "1.0.0",
+  "description": "基于react的曝光埋点",
+  "main": "dist/index.es.js",
+  "keywords": [
+    "基于react的曝光埋点",
+    "useEffect",
+    "IntersectionObserver"
+  ],
+  "scripts": {
+    "build": "vite build && tsc",
+    "publish": "npm publish"
+  },
+  "author": "sidecity.li",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "core-js": "^3.39.0"
+  },
+  "typings": "types/index.d.ts",
+  "files": [
+    "src",
+    "dist",
+    "types"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@rollup/plugin-babel": "^6.0.4",
+    "@babel/preset-env": "^7.26.0"
+  },
+  "dependencies": {}
+}
