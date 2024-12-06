@@ -1,12 +1,11 @@
 {
-  "name": "@burying/exposure-burying",
+  "name": "@burying/automatic-burying",
   "version": "1.0.0",
-  "description": "基于react的曝光埋点",
+  "description": "基于react Fiber的自动化埋点",
   "main": "dist/index.es.js",
   "keywords": [
-    "基于react的曝光埋点",
-    "useEffect",
-    "IntersectionObserver"
+    "React",
+    "基于react Fiber的自动化埋点"
   ],
   "scripts": {
     "build": "vite build && tsc",
