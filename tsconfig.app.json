@@ -24,7 +24,8 @@
     // "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@burying/exposure-burying": ["./packages/exposure-burying"]
+      "@burying/exposure-burying": ["./packages/exposure-burying"],
+      "@burying/automatic-burying": ["./packages/automatic-burying"]
     },
   },
 }

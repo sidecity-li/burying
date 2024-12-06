@@ -6,6 +6,7 @@
   "scripts": {
     "start:demo": "npm run dev -C demo",
     "build:exposure-burying": "npm run build -C packages/exposure-burying",
+    "build:automatic-burying": "npm run build -C packages/automatic-burying",
     "lint": "eslint 'packages/**/*' ",
     "preview": "vite preview",
     "publish:exposure-burying": "npm run publish -C packages/exposure-burying"
