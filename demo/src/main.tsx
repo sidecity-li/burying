@@ -1,15 +1,31 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { getFiberFromEvent } from "@burying/automatic-burying";
+import {
+  FiberOption,
+  getFiberFromEvent,
+  setup,
+} from "@burying/automatic-burying";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
-document.addEventListener(
-  "click",
-  (e: Event) => {
-    debugger;
-    const target = getFiberFromEvent(e);
-    console.log(target, "target");
+const fiberConfig: FiberOption[] = [
+  {
+    name: "Button",
+    titleField: "children",
+    condition: "fiber.type?.displayName === 'Button'",
+    hierarchical: false,
   },
-  true
-);
+  {
+    name: "Modal",
+    titleField: "title",
+    condition: "fiber.type?.displayName === 'Modal'",
+    hierarchical: false,
+  },
+];
+
+setup({
+  fiberConfig,
+  callback: (path: any) => {
+    console.log(path, "进行上报: path");
+  },
+});

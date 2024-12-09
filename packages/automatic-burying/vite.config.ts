@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { getBabelOutputPlugin } from '@rollup/plugin-babel';
+import { getBabelOutputPlugin } from "@rollup/plugin-babel";
 import path from "path";
 
 const entry = path.resolve(__dirname, "./src/index.tsx");
@@ -8,9 +8,7 @@ const entry = path.resolve(__dirname, "./src/index.tsx");
 // https://vite.dev/config/
 
 export default defineConfig({
-  plugins: [
-    react(),
-  ],
+  plugins: [react()],
   build: {
     minify: false,
     sourcemap: true,
@@ -23,10 +21,10 @@ export default defineConfig({
       plugins: [
         getBabelOutputPlugin({
           allowAllFormats: true,
-          configFile: path.resolve(__dirname, './babel.config.js')
+          configFile: path.resolve(__dirname, "./babel.config.js"),
         }),
       ],
-      external: ["react", "react/jsx-runtime"],
+      external: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"],
       output: {
         dir: "./dist",
       },

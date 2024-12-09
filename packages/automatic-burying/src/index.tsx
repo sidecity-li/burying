@@ -1,4 +1,5 @@
 import { ReactElement, ReactNode } from "react";
+import { flushSync } from "react-dom";
 import { createRoot, Root } from "react-dom/client";
 
 export type Fiber = {
@@ -58,7 +59,10 @@ export function getFormatedFiberOptions(fiberOptions: FiberOption[]) {
     const { condition, ...rest } = option;
     res.push({
       ...rest,
-      condition: new Function("fiber", condition) as FiberConditionFn,
+      condition: new Function(
+        "fiber",
+        `return ${condition}`
+      ) as FiberConditionFn,
     });
   }
 
@@ -96,12 +100,16 @@ export function getContentFromReactElement(element: ReactElement) {
   const [reactRoot, container] = requestReactRoot()!;
 
   // TODO 这里可能需要异步导致的问题。
-  reactRoot.render(element);
+  flushSync(() => reactRoot.render(element));
 
   return container.textContent;
 }
 
 export function getContentFromReactNode(node: ReactNode) {
+  debugger;
+  console.log(typeof node === "boolean");
+  console.log(typeof node === "undefined");
+  console.log(typeof node === "object" && node === null);
   if (
     typeof node === "boolean" ||
     typeof node === "undefined" ||
@@ -133,24 +141,31 @@ export function getPathOfMatchedFibers(
     const { memoizedProps } = fiber;
     const title = memoizedProps?.[titleField];
     const titleStr = getContentFromReactNode(title);
-    path = `{{${name}&&${titleStr}}}${path}`;
+    path = `${path}{{${name}&&${titleStr}}}`;
   }
 
   return path;
 }
 
-export function setup() {
+export function setup({
+  fiberConfig,
+  callback,
+}: {
+  fiberConfig: FiberOption[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  callback: any;
+}) {
   const handler = (event) => {
     const originFiber = getFiberFromEvent(event);
-    const fiberConfig: FiberOption[] = [];
     const fiberAndOptions = getAllFibersFromOriginFiber(
       originFiber,
       fiberConfig
     );
-    return getPathOfMatchedFibers(fiberAndOptions);
+    const path = getPathOfMatchedFibers(fiberAndOptions);
+    callback(path);
   };
 
-  document.addEventListener("click", handler);
+  document.addEventListener("click", handler, true);
 
   return () => document.removeEventListener("click", handler);
 }
