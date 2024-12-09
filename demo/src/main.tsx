@@ -1,10 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import {
-  FiberOption,
-  getFiberFromEvent,
-  setup,
-} from "@burying/automatic-burying";
+import { FiberOption, setup } from "@burying/automatic-burying";
 
 createRoot(document.getElementById("root")!).render(<App />);
 

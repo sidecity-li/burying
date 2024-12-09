@@ -9,7 +9,8 @@
     "build:automatic-burying": "npm run build -C packages/automatic-burying",
     "lint": "eslint 'packages/**/*' ",
     "preview": "vite preview",
-    "publish:exposure-burying": "npm run publish -C packages/exposure-burying"
+    "publish:exposure-burying": "npm run publish -C packages/exposure-burying",
+    "publish:automatic-burying": "npm run publish -C packages/automatic-burying"
   },
   "dependencies": {},
   "devDependencies": {

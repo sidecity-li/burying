@@ -106,10 +106,6 @@ export function getContentFromReactElement(element: ReactElement) {
 }
 
 export function getContentFromReactNode(node: ReactNode) {
-  debugger;
-  console.log(typeof node === "boolean");
-  console.log(typeof node === "undefined");
-  console.log(typeof node === "object" && node === null);
   if (
     typeof node === "boolean" ||
     typeof node === "undefined" ||
@@ -147,6 +143,13 @@ export function getPathOfMatchedFibers(
   return path;
 }
 
+function shouldEablePostMessage() {
+  const topWindow = window.top;
+  const domain = topWindow.location.host;
+  // TODO 需求嵌入目标网站的地址
+  return topWindow !== window.self && domain === "";
+}
+
 export function setup({
   fiberConfig,
   callback,
@@ -155,6 +158,8 @@ export function setup({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: any;
 }) {
+  const eablePostMessage = shouldEablePostMessage();
+  const topWindow = window.top;
   const handler = (event) => {
     const originFiber = getFiberFromEvent(event);
     const fiberAndOptions = getAllFibersFromOriginFiber(
@@ -162,7 +167,11 @@ export function setup({
       fiberConfig
     );
     const path = getPathOfMatchedFibers(fiberAndOptions);
-    callback(path);
+    if (eablePostMessage) {
+      topWindow.postMessage(path);
+    } else {
+      callback(path);
+    }
   };
 
   document.addEventListener("click", handler, true);
