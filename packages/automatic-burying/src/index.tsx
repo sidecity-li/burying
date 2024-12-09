@@ -1,12 +1,16 @@
 import { ReactElement, ReactNode } from "react";
 import { createRoot, Root } from "react-dom/client";
 
-export interface FiberNode {
+export type Fiber = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type: any;
-  memorizedProps: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stateNode: any;
-  return: any;
-}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return: Fiber | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  memoizedProps: any;
+};
 
 export interface FiberOption {
   name: string;
@@ -15,7 +19,7 @@ export interface FiberOption {
   hierarchical: boolean;
 }
 
-type FiberConditionFn = (fiber: FiberNode) => boolean;
+type FiberConditionFn = (fiber: Fiber) => boolean;
 
 let root: [Root, HTMLDivElement] | null;
 
@@ -40,7 +44,7 @@ export function getFiberFromEvent(event: Event) {
   for (const key in target) {
     if (Object.prototype.hasOwnProperty.call(target, key)) {
       if (key.startsWith("__reactFiber")) {
-        return target[key] as FiberNode;
+        return target[key] as Fiber;
       }
     }
   }
@@ -62,11 +66,11 @@ export function getFormatedFiberOptions(fiberOptions: FiberOption[]) {
 }
 
 export function getAllFibersFromOriginFiber(
-  originFiber: FiberNode,
+  originFiber: Fiber,
   fiberConfig: FiberOption[]
 ) {
   const formatedFiberConfig = getFormatedFiberOptions(fiberConfig);
-  const allFibers: [FiberNode, FormatedFiberOption][] = [];
+  const allFibers: [Fiber, FormatedFiberOption][] = [];
 
   let currentFiber = originFiber;
 
@@ -120,22 +124,33 @@ export function getContentFromReactNode(node: ReactNode) {
 }
 
 export function getPathOfMatchedFibers(
-  matchedFibers: [FiberNode, FormatedFiberOption][]
+  matchedFibers: [Fiber, FormatedFiberOption][]
 ) {
   let path = "";
   for (const fiberAndConfig of matchedFibers) {
     const [fiber, option] = fiberAndConfig;
-
     const { titleField, name } = option;
-
-    const { memorizedProps } = fiber;
-
-    const title = memorizedProps?.[titleField];
-
+    const { memoizedProps } = fiber;
+    const title = memoizedProps?.[titleField];
     const titleStr = getContentFromReactNode(title);
-
     path = `{{${name}&&${titleStr}}}${path}`;
   }
 
   return path;
+}
+
+export function setup() {
+  const handler = (event) => {
+    const originFiber = getFiberFromEvent(event);
+    const fiberConfig: FiberOption[] = [];
+    const fiberAndOptions = getAllFibersFromOriginFiber(
+      originFiber,
+      fiberConfig
+    );
+    return getPathOfMatchedFibers(fiberAndOptions);
+  };
+
+  document.addEventListener("click", handler);
+
+  return () => document.removeEventListener("click", handler);
 }
