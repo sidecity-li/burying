@@ -13,6 +13,11 @@ export type Fiber = {
   memoizedProps: any;
 };
 
+async function getProjectConfig(projectKey: string) {
+  const res = await fetch(`http://0.0.0.0:3000/api/config?key=${projectKey}`);
+  return res.json().then((res) => res.data);
+}
+
 export interface FiberOption {
   name: string;
   titleField: string;
@@ -143,11 +148,40 @@ export function getPathOfMatchedFibers(
   return path;
 }
 
-function shouldEablePostMessage() {
-  const topWindow = window.top;
-  const domain = topWindow.location.host;
-  // TODO 需求嵌入目标网站的地址
-  return topWindow !== window.self && domain === "";
+let parentHost;
+
+window.addEventListener("message", (event: MessageEvent) => {
+  const {
+    data: { __is_automatic_burying_message_from_parent_window__, host },
+  } = event;
+
+  const hasEmbed = window.top !== window;
+  if (hasEmbed && __is_automatic_burying_message_from_parent_window__) {
+    parentHost = host;
+  }
+});
+
+let projectConfig;
+
+function getEvent(projectConfig, url, path) {
+  const { events } = projectConfig;
+  if (events?.length) {
+    for (const event of events) {
+      const { matchers, reportField, name } = event;
+      if (matchers?.length) {
+        for (const matcher of matchers) {
+          const { url: matcherUrl, path: matcherPath } = matcher;
+          if (matcherUrl === url && matcherPath === path) {
+            return {
+              [reportField]: name,
+            };
+          }
+        }
+      }
+    }
+  }
+
+  return null;
 }
 
 export function setup({
@@ -158,8 +192,16 @@ export function setup({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: any;
 }) {
-  const eablePostMessage = shouldEablePostMessage();
   const topWindow = window.top;
+  if (topWindow) {
+    requestIdleCallback(() =>
+      getProjectConfig(
+        "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjMsInByb2plY3ROYW1lIjoi5LqL5L6L6aG555uuMSIsImlhdCI6MTczMzkxODI0NH0.LJiB9Asl5448W_CXmFx9bqBVZyxmZ8CfHsU5U0ASsNI"
+      ).then((config) => {
+        projectConfig = config;
+      })
+    );
+  }
   const handler = (event) => {
     const originFiber = getFiberFromEvent(event);
     const fiberAndOptions = getAllFibersFromOriginFiber(
@@ -167,10 +209,23 @@ export function setup({
       fiberConfig
     );
     const path = getPathOfMatchedFibers(fiberAndOptions);
-    if (eablePostMessage) {
-      topWindow.postMessage(path);
+    const pathname = location.pathname;
+    if (parentHost) {
+      topWindow.postMessage(
+        {
+          __is_automatic_burying_message_from_child__: true,
+          path,
+          pathname,
+        },
+        parentHost
+      );
     } else {
-      callback(path);
+      if (projectConfig) {
+        const event = getEvent(projectConfig, pathname, path);
+        if (event) {
+          callback(event);
+        }
+      }
     }
   };
 

@@ -21,7 +21,7 @@ const fiberConfig: FiberOption[] = [
 
 setup({
   fiberConfig,
-  callback: (path: any) => {
-    console.log(path, "进行上报: path");
+  callback: (event: any) => {
+    alert(JSON.stringify(event));
   },
 });
