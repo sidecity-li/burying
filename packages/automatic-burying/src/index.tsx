@@ -185,10 +185,8 @@ function getEvent(projectConfig, url, path) {
 }
 
 export function setup({
-  fiberConfig,
   callback,
 }: {
-  fiberConfig: FiberOption[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: any;
 }) {
@@ -203,13 +201,16 @@ export function setup({
     );
   }
   const handler = (event) => {
+    const fiberConfig = projectConfig?.elements ?? [];
     const originFiber = getFiberFromEvent(event);
     const fiberAndOptions = getAllFibersFromOriginFiber(
       originFiber,
       fiberConfig
     );
+
     const path = getPathOfMatchedFibers(fiberAndOptions);
     const pathname = location.pathname;
+
     if (parentHost) {
       topWindow.postMessage(
         {
@@ -227,6 +228,7 @@ export function setup({
         }
       }
     }
+    debugger;
   };
 
   document.addEventListener("click", handler, true);
