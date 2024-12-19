@@ -2,6 +2,8 @@ import { ReactElement, ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { createRoot, Root } from "react-dom/client";
 
+const configSite = "http://0.0.0.0:3000";
+
 export type Fiber = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type: any;
@@ -14,7 +16,7 @@ export type Fiber = {
 };
 
 async function getProjectConfig(projectKey: string) {
-  const res = await fetch(`http://0.0.0.0:3000/api/config?key=${projectKey}`);
+  const res = await fetch(`${configSite}/api/config?key=${projectKey}`);
   return res.json().then((res) => res.data);
 }
 
