@@ -1,19 +1,85 @@
 import {
+  ElementConditionFn,
   ElementOption,
+  ElementProperty,
+  Fiber,
+  FormatedElementOption,
   getAllFibersFromOriginFiber,
+  getContentFromReactElement,
   getFiberFromEvent,
   getPathOfMatchedFibers,
 } from "./fiber";
 
 const configSite = "https://automatic-burying.vercel.app";
 
+type Matcher = {
+  id: number;
+  url: string;
+  path: string;
+  pathShouldPerfectMatch: boolean;
+};
+
+type FormatedMatcher = Omit<Matcher, "url"> & {
+  url: RegExp;
+};
+
+type EventOption = {
+  id: number;
+  name: string;
+  matchers: Matcher[];
+};
+
+type FormatedEventOption = Omit<EventOption, "matchers"> & {
+  matchers: FormatedMatcher[];
+};
+
 type ProjectConfig = {
   elements: ElementOption[];
+  events: EventOption[];
 };
 
 async function getProjectConfig(projectKey: string) {
   const res = await fetch(`${configSite}/api/config?key=${projectKey}`);
   return res.json().then((res) => res.data);
+}
+
+export function getFormatedElementOptions(elementOptions: ElementOption[]) {
+  const res: FormatedElementOption[] = [];
+  for (const option of elementOptions) {
+    const { condition, ...rest } = option;
+    res.push({
+      ...rest,
+      condition: new Function(
+        "fiber",
+        `return ${condition}`
+      ) as ElementConditionFn,
+    });
+  }
+
+  return res;
+}
+
+export function getFormatedEventOptions(
+  eventOptions: EventOption[] | undefined
+) {
+  const res: FormatedEventOption[] = [];
+  for (const eventOption of eventOptions) {
+    const { matchers = [], ...rest } = eventOption;
+    const formatedMatcherOptions = matchers.map((matcher) => {
+      const { url, ...restMatcherOptions } = matcher;
+
+      return {
+        ...restMatcherOptions,
+        url: new RegExp(url),
+      };
+    });
+    res.push({
+      ...rest,
+      matchers: formatedMatcherOptions,
+    });
+  }
+
+  return res;
 }
 
 let parentHost;
@@ -29,66 +95,105 @@ window.addEventListener("message", (event: MessageEvent) => {
   }
 });
 
-function getEvent(projectConfig, url, path) {
-  const { events } = projectConfig;
-  if (events?.length) {
-    for (const event of events) {
-      const { matchers, reportField, name } = event;
+function getEventType(
+  eventOptions: FormatedEventOption[],
+  url: string,
+  path: string
+) {
+  if (eventOptions?.length) {
+    for (const eventOption of eventOptions) {
+      const { matchers, name } = eventOption;
       if (matchers?.length) {
         for (const matcher of matchers) {
-          const { url: matcherUrl, path: matcherPath } = matcher;
-          if (matcherUrl === url && matcherPath === path) {
-            return {
-              [reportField]: name,
-            };
+          const {
+            url: matcherUrl,
+            path: matcherPath,
+            pathShouldPerfectMatch,
+          } = matcher;
+          if (
+            matcherUrl.test(url) &&
+            (matcherPath === path ||
+              (!pathShouldPerfectMatch && path.startsWith(matcherPath)))
+          ) {
+            return name;
           }
         }
       }
     }
   }
 
-  return null;
+  return undefined;
 }
 
-export function listen({
+function getPropertiesFromFiber(fiber: Fiber, properties: ElementProperty[]) {
+  return properties.reduce((res, property) => {
+    const { name, value } = property;
+    const { memoizedProps } = fiber;
+    return {
+      ...res,
+      [name]: getContentFromReactElement(memoizedProps[value]),
+    };
+  }, {});
+}
+
+function getEventProperties(fiberAndOptions: [Fiber, FormatedElementOption][]) {
+  let properties = {};
+
+  const length = fiberAndOptions.length;
+
+  for (let i = length - 1; i >= 0; i--) {
+    const [fiber, elementOption] = fiberAndOptions[i];
+    const { hierarchical, properties: propertyOptions = [] } = elementOption;
+    properties = {
+      ...getPropertiesFromFiber(fiber, propertyOptions),
+      ...properties,
+    };
+    if (hierarchical) {
+      break;
+    }
+  }
+
+  return properties;
+}
+
+export function setupListen({
   projectKey,
   callback,
 }: {
   projectKey: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  callback: any;
+  callback: (event: { type: string }) => void;
 }) {
-  let projectConfig: ProjectConfig | undefined;
+  let formatedElementOptions: FormatedElementOption[] | undefined;
+  let formatedEventOptions: FormatedEventOption[] | undefined;
 
-  async function requestProjectConfig(projectKey: string) {
-    if (projectConfig) {
-      return projectConfig;
+  const requestProjectConfig = () => {
+    if (!formatedElementOptions || !formatedEventOptions) {
+      getProjectConfig(projectKey).then((config: ProjectConfig) => {
+        const { elements, events } = config;
+        formatedElementOptions = getFormatedElementOptions(elements ?? []);
+        formatedEventOptions = getFormatedEventOptions(events ?? []);
+      });
     }
-    return getProjectConfig(projectKey).then((config) => {
-      projectConfig = config;
-      return projectConfig;
-    });
-  }
+  };
 
-  function requestProjectConfigLazy(projectKey: string) {
+  const requestProjectConfigLazy = () => {
     requestIdleCallback((deadline) => {
       if (deadline.timeRemaining() > 0) {
-        requestProjectConfig(projectKey);
+        requestProjectConfig();
       }
     });
-  }
+  };
   // 预请求项目配置
-  requestProjectConfigLazy(projectKey);
+  requestProjectConfigLazy();
 
   const topWindow = window.top;
 
   const handler = async (event) => {
-    await requestProjectConfig(projectKey);
-    const elementConfig = projectConfig?.elements ?? [];
+    await requestProjectConfig();
     const originFiber = getFiberFromEvent(event);
     const fiberAndOptions = getAllFibersFromOriginFiber(
       originFiber,
-      elementConfig
+      formatedElementOptions
     );
 
     const path = getPathOfMatchedFibers(fiberAndOptions);
@@ -105,12 +210,13 @@ export function listen({
         parentHost
       );
     } else {
-      if (projectConfig) {
-        const event = getEvent(projectConfig, pathname, path);
-        if (event) {
-          callback(event);
-        }
-      }
+      const eventName = getEventType(formatedEventOptions, pathname, path);
+      const extraProperties = getEventProperties(fiberAndOptions);
+
+      callback({
+        type: eventName,
+        ...extraProperties,
+      });
     }
   };
 

@@ -1,28 +1,27 @@
-import { ReactElement, ReactNode } from "react";
-export type Fiber = {
-    type: any;
-    stateNode: any;
-    return: Fiber | null;
-    memoizedProps: any;
+import { ElementOption, FormatedElementOption } from "./fiber";
+type Matcher = {
+    id: number;
+    url: string;
+    path: string;
+    pathShouldPerfectMatch: boolean;
 };
-export interface FiberOption {
+type FormatedMatcher = Omit<Matcher, "url"> & {
+    url: RegExp;
+};
+type EventOption = {
+    id: number;
     name: string;
-    titleField: string;
-    condition: string;
-    hierarchical: boolean;
-}
-type FiberConditionFn = (fiber: Fiber) => boolean;
-export interface FormatedFiberOption extends Omit<FiberOption, "condition"> {
-    condition: FiberConditionFn;
-}
-export declare function getFiberFromEvent(event: Event): Fiber;
-export declare function getFormatedFiberOptions(fiberOptions: FiberOption[]): FormatedFiberOption[];
-export declare function getAllFibersFromOriginFiber(originFiber: Fiber, fiberConfig: FiberOption[]): [Fiber, FormatedFiberOption][];
-export declare function getContentFromReactElement(element: ReactElement): string;
-export declare function getContentFromReactNode(node: ReactNode): string;
-export declare function getPathOfMatchedFibers(matchedFibers: [Fiber, FormatedFiberOption][]): string;
-export declare function listen({ projectKey, callback, }: {
+    matchers: Matcher[];
+};
+type FormatedEventOption = Omit<EventOption, "matchers"> & {
+    matchers: FormatedMatcher[];
+};
+export declare function getFormatedElementOptions(elementOptions: ElementOption[]): FormatedElementOption[];
+export declare function getFormatedEventOptions(eventOptions: EventOption[] | undefined): FormatedEventOption[];
+export declare function setupListen({ projectKey, callback, }: {
     projectKey: string;
-    callback: any;
+    callback: (event: {
+        type: string;
+    }) => void;
 }): () => void;
 export {};

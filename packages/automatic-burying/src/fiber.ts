@@ -13,7 +13,7 @@ export type Fiber = {
   memoizedProps: any;
 };
 
-type ElementProperty = {
+export type ElementProperty = {
   id: number;
   name: string;
   value: string;
@@ -71,22 +71,6 @@ export function getFiberFromEvent(event: Event) {
   return null;
 }
 
-export function getFormatedElementOptions(elementOptions: ElementOption[]) {
-  const res: FormatedElementOption[] = [];
-  for (const option of elementOptions) {
-    const { condition, ...rest } = option;
-    res.push({
-      ...rest,
-      condition: new Function(
-        "fiber",
-        `return ${condition}`
-      ) as ElementConditionFn,
-    });
-  }
-
-  return res;
-}
-
 export function getContentFromReactElement(element: ReactElement) {
   const [reactRoot, container] = requestReactRoot()!;
   flushSync(() => reactRoot.render(element));
@@ -133,9 +117,8 @@ export function getPathOfMatchedFibers(
 
 export function getAllFibersFromOriginFiber(
   originFiber: Fiber,
-  fiberConfig: ElementOption[]
+  formatedFiberConfig: FormatedElementOption[]
 ) {
-  const formatedFiberConfig = getFormatedElementOptions(fiberConfig);
   const allFibers: [Fiber, FormatedElementOption][] = [];
 
   let currentFiber = originFiber;
