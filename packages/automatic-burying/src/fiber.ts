@@ -56,13 +56,20 @@ export function requestReactRootLazy() {
   });
 }
 
+let fiberKey;
+
 export function getFiberFromEvent(event: Event) {
   const target = event.target;
+
+  if (fiberKey) {
+    return target[fiberKey] as Fiber;
+  }
 
   for (const key in target) {
     if (Object.prototype.hasOwnProperty.call(target, key)) {
       // 这里不同的React 版本会不一样
       if (key.startsWith("__reactFiber")) {
+        fiberKey = key;
         return target[key] as Fiber;
       }
     }
