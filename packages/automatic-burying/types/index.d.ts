@@ -21,7 +21,8 @@ export declare function getAllFibersFromOriginFiber(originFiber: Fiber, fiberCon
 export declare function getContentFromReactElement(element: ReactElement): string;
 export declare function getContentFromReactNode(node: ReactNode): string;
 export declare function getPathOfMatchedFibers(matchedFibers: [Fiber, FormatedFiberOption][]): string;
-export declare function setup({ callback, }: {
+export declare function listen({ projectKey, callback, }: {
+    projectKey: string;
     callback: any;
 }): () => void;
 export {};
