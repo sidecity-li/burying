@@ -4,14 +4,19 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@arco-design/web-react": "^2.65.0",
+    "@burying/automatic-burying": "workspace:^",
     "@burying/exposure-burying": "workspace:^",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "scripts": {
-    "dev": "vite"
+    "dev": "vite --host"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.26.0"
+  }
 }

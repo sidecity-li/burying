@@ -18,23 +18,21 @@ export type GenerateExposureContainerProps = {
 };
 
 export type ExposureComponentProps = Partial<
-  Omit<
-    GenerateExposureContainerProps,
-    "triggerType" | "exposeFn" | "compareEvent"
-  >
+  Omit<GenerateExposureContainerProps, "exposeFn" | "compareEvent">
 > & {
-  children: ReactNode;
   data: DataType;
 };
 
-export type UseEffectExposureComponentProps = ExposureComponentProps;
-
-export type eventQueueItem = {id: number} & Event
+export type UseEffectExposureComponentProps = ExposureComponentProps & {
+  children?: ReactNode;
+};
 
 export type IntersectionObserverExposureComponentProps =
   ExposureComponentProps & {
     threshold?: number;
     display?: "block" | "inline";
+  } & {
+    children: ReactNode;
   };
 
 export type DataSetType<T extends Record<string, unknown>> = {
@@ -57,45 +55,39 @@ export default function generateExposureComponent({
   compareEvent = (data1, data2) =>
     JSON.stringify(data1) === JSON.stringify(data2),
 }: GenerateExposureContainerProps) {
-  // const eventQueue: Event[] = [];
-  const eventQueue: Record<number, eventQueueItem> = {};
-  let eventQueueItemId = 0;
+  const eventQueue: Event[] = [];
 
   const executeExposure = (event: Event, delay: number) => {
     event.timer = setTimeout(() => {
       exposeFn(event.data);
     }, delay);
 
-    return event;
+    return event.timer;
   };
 
-  const removeEvent = (event: eventQueueItem) => {
-    if (event.timer) {
+  const removeEvent = (i: number) => {
+    const event = eventQueue[i];
+
+    if (event) {
       clearTimeout(event.timer);
-      event.timer = undefined;
+      eventQueue.splice(i, 1);
     }
-    // eventQueue.pop();
-    eventQueue[event.id] = null
   };
 
   const scheduleExposure = (event: Event, delay: number) => {
-    eventQueueItemId++
-    // const length = eventQueue.length;
-    const length = Object.keys(eventQueue).length;
-    const lastEvent = eventQueue[length - 1];
+    const { date, data } = event;
 
-    if (
-      lastEvent &&
-      compareEvent(event.data, lastEvent.data) &&
-      event.date - lastEvent.date < delay
-    ) {
-      removeEvent(lastEvent);
+    const preciousSameEventIndex = eventQueue.findIndex((item) => {
+      return compareEvent(item.data, data) && date - item.date < delay;
+    });
+
+    if (preciousSameEventIndex >= 0) {
+      removeEvent(preciousSameEventIndex);
     }
-    let { timer } = executeExposure(event, delay);
-    // eventQueue.push(event);
-    eventQueue[eventQueueItemId] = { ...event, id: eventQueueItemId };
 
-    return timer
+    let timer = executeExposure(event, delay);
+    eventQueue.push(event);
+    return timer;
   };
 
   return [

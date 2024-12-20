@@ -1,56 +1,12 @@
-import { useEffect, useState } from "react";
+import { Modal, Button } from "@arco-design/web-react";
 
-import generateExposureComponent from "@burying/exposure-burying";
-
-const [ExposureComponent, IntersectionExposureComponent] =
-  generateExposureComponent({
-    debounce: 500,
-    exposeFn: (parmas: any) => {
-      console.log(parmas, "parmas");
-    },
-  });
-
-function App() {
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
-  }, []);
-
-  if (loading) {
-    return "loading......";
-  }
+export default function App() {
   return (
-    <>
-      <ExposureComponent
-        data={{
-          useEffect: "555",
-          type: "useEffect",
-        }}
-      >
-        <p style={{ backgroundColor: "red" }}>useEffect 上报</p>
-      </ExposureComponent>
-
-      <p style={{ height: "1700px" }}>111</p>
-
-      <IntersectionExposureComponent
-        data={{
-          intersection: "666",
-          type: "Intersection",
-        }}
-      >
-        <p style={{ height: "900px", backgroundColor: "green" }}>
-          Intersection 上报
-        </p>
-      </IntersectionExposureComponent>
-
-      <p style={{ height: "1900px", backgroundColor: "pink" }}></p>
-    </>
+    <Modal visible={true} title={<div>对话框标题</div>}>
+      <p style={{ border: "1px solid red" }}>
+        444
+        <Button>hello</Button>
+      </p>
+    </Modal>
   );
 }
-
-export default App;
