@@ -17,8 +17,8 @@ type FormatedEventOption = Omit<EventOption, "matchers"> & {
     matchers: FormatedMatcher[];
 };
 export declare function getFormatedElementOptions(elementOptions: ElementOption[]): FormatedElementOption[];
-export declare function getFormatedEventOptions(eventOptions: EventOption[] | undefined): FormatedEventOption[];
-export declare function setupListen({ projectKey, callback, }: {
+export declare function getFormatedEventOptions(eventOptions: EventOption[]): FormatedEventOption[];
+export declare function setupListen(element: HTMLElement, { projectKey, callback, }: {
     projectKey: string;
     callback: (event: {
         type: string;

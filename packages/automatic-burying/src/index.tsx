@@ -59,9 +59,7 @@ export function getFormatedElementOptions(elementOptions: ElementOption[]) {
   return res;
 }
 
-export function getFormatedEventOptions(
-  eventOptions: EventOption[] | undefined
-) {
+export function getFormatedEventOptions(eventOptions: EventOption[]) {
   const res: FormatedEventOption[] = [];
   for (const eventOption of eventOptions) {
     const { matchers = [], ...rest } = eventOption;
@@ -156,18 +154,24 @@ function getEventProperties(fiberAndOptions: [Fiber, FormatedElementOption][]) {
   return properties;
 }
 
-export function setupListen({
-  projectKey,
-  callback,
-}: {
-  projectKey: string;
-  callback: (event: { type: string }) => void;
-}) {
+export function setupListen(
+  element: HTMLElement,
+  {
+    projectKey,
+    callback,
+  }: {
+    projectKey: string;
+    callback: (event: { type: string }) => void;
+  }
+) {
   let formatedElementOptions: FormatedElementOption[] | undefined;
   let formatedEventOptions: FormatedEventOption[] | undefined;
 
+  const hasRequestProjectConfig = () =>
+    formatedElementOptions && formatedEventOptions;
+
   const requestProjectConfig = () => {
-    if (!formatedElementOptions || !formatedEventOptions) {
+    if (!hasRequestProjectConfig()) {
       getProjectConfig(projectKey).then((config: ProjectConfig) => {
         const { elements, events } = config;
         formatedElementOptions = getFormatedElementOptions(elements ?? []);
@@ -188,8 +192,12 @@ export function setupListen({
 
   const topWindow = window.top;
 
-  const handler = async (event) => {
-    await requestProjectConfig();
+  const handler = async (event: MouseEvent) => {
+    if (!hasRequestProjectConfig()) {
+      requestProjectConfig();
+      return;
+    }
+
     const originFiber = getFiberFromEvent(event);
     const fiberAndOptions = getAllFibersFromOriginFiber(
       originFiber,
@@ -220,7 +228,7 @@ export function setupListen({
     }
   };
 
-  document.addEventListener("click", handler, true);
+  element.addEventListener("click", handler, true);
 
-  return () => document.removeEventListener("click", handler);
+  return () => element.removeEventListener("click", handler);
 }
