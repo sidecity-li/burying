@@ -6,7 +6,7 @@ createRoot(document.getElementById("root")!).render(<App />);
 
 setupListen(document.body, {
   projectKey:
-    "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsInByb2plY3ROYW1lIjoi5LqL5L6L6aG555uuMSIsImlhdCI6MTczMzQ3MDYxMH0.VLZBzOWciGD3Miuz41v0-2Pz6HFdh3hsdNUTPcAZCpk",
+    "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjMsInByb2plY3ROYW1lIjoi5LqL5L6L6aG555uuMSIsImlhdCI6MTczMzkxODI0NH0.LJiB9Asl5448W_CXmFx9bqBVZyxmZ8CfHsU5U0ASsNI",
   callback: (event) => {
     alert(`
       上报的事件:

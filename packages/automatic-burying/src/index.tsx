@@ -11,6 +11,7 @@ import {
 } from "./fiber";
 
 const configSite = "https://automatic-burying.vercel.app";
+// const configSite = "http://192.168.60.137:3000";
 
 type Matcher = {
   id: number;
@@ -38,8 +39,12 @@ type ProjectConfig = {
   events: EventOption[];
 };
 
+let parentHost;
+
 async function getProjectConfig(projectKey: string) {
-  const res = await fetch(`${configSite}/api/config?key=${projectKey}`);
+  const res = await fetch(
+    `${parentHost ?? configSite}/api/config?key=${projectKey}`
+  );
   return res.json().then((res) => res.data);
 }
 
@@ -79,8 +84,6 @@ export function getFormatedEventOptions(eventOptions: EventOption[]) {
 
   return res;
 }
-
-let parentHost;
 
 window.addEventListener("message", (event: MessageEvent) => {
   const {
@@ -206,7 +209,6 @@ export function setupListen(
 
     const path = getPathOfMatchedFibers(fiberAndOptions);
     const pathname = location.pathname;
-
     // 代表被嵌入到了configSite中
     if (parentHost) {
       topWindow.postMessage(
