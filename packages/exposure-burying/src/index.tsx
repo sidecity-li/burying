@@ -84,8 +84,10 @@ export default function generateExposureComponent({
     ) {
       removeEvent(lastEvent);
     }
-    executeExposure(event, delay);
+    let { timer } = executeExposure(event, delay);
     eventQueue.push(event);
+    
+    return timer
   };
 
   return [
@@ -93,13 +95,16 @@ export default function generateExposureComponent({
       const debounceValue = debounce || defaultdebounce;
 
       useEffect(() => {
-        scheduleExposure(
+        let timer = scheduleExposure(
           {
             date: new Date().getTime(),
             data,
           },
           debounceValue
         );
+        return () => {
+         clearTimeout(timer)
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
 
