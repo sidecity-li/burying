@@ -29,6 +29,8 @@ export type ExposureComponentProps = Partial<
 
 export type UseEffectExposureComponentProps = ExposureComponentProps;
 
+export type eventQueueItem = {id: number} & Event
+
 export type IntersectionObserverExposureComponentProps =
   ExposureComponentProps & {
     threshold?: number;
@@ -55,7 +57,9 @@ export default function generateExposureComponent({
   compareEvent = (data1, data2) =>
     JSON.stringify(data1) === JSON.stringify(data2),
 }: GenerateExposureContainerProps) {
-  const eventQueue: Event[] = [];
+  // const eventQueue: Event[] = [];
+  const eventQueue: Record<number, eventQueueItem> = {};
+  let eventQueueItemId = 0;
 
   const executeExposure = (event: Event, delay: number) => {
     event.timer = setTimeout(() => {
@@ -65,16 +69,19 @@ export default function generateExposureComponent({
     return event;
   };
 
-  const removeEvent = (event: Event) => {
+  const removeEvent = (event: eventQueueItem) => {
     if (event.timer) {
       clearTimeout(event.timer);
       event.timer = undefined;
     }
-    eventQueue.pop();
+    // eventQueue.pop();
+    eventQueue[event.id] = null
   };
 
   const scheduleExposure = (event: Event, delay: number) => {
-    const length = eventQueue.length;
+    eventQueueItemId++
+    // const length = eventQueue.length;
+    const length = Object.keys(eventQueue).length;
     const lastEvent = eventQueue[length - 1];
 
     if (
@@ -85,8 +92,9 @@ export default function generateExposureComponent({
       removeEvent(lastEvent);
     }
     let { timer } = executeExposure(event, delay);
-    eventQueue.push(event);
-    
+    // eventQueue.push(event);
+    eventQueue[eventQueueItemId] = { ...event, id: eventQueueItemId };
+
     return timer
   };
 
@@ -103,7 +111,7 @@ export default function generateExposureComponent({
           debounceValue
         );
         return () => {
-         clearTimeout(timer)
+          clearTimeout(timer)
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
