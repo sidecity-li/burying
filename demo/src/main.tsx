@@ -4,7 +4,7 @@ import { setupListen } from "@burying/automatic-burying";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
-setupListen({
+setupListen(document.body, {
   projectKey:
     "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsInByb2plY3ROYW1lIjoi5LqL5L6L6aG555uuMSIsImlhdCI6MTczMzQ3MDYxMH0.VLZBzOWciGD3Miuz41v0-2Pz6HFdh3hsdNUTPcAZCpk",
   callback: (event) => {

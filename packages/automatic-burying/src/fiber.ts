@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from "react";
+import { Fragment, ReactElement, ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { createRoot, Root } from "react-dom/client";
 
@@ -102,7 +102,15 @@ export function getContentFromReactNode(node: ReactNode) {
     }
     return content;
   } else {
-    return getContentFromReactElement(node as ReactElement);
+    const element = node as ReactElement;
+    const { type } = element;
+    // TODO 这里Portal本来可以处理，但是因为react没有导出REACT_PORTAL_TYPE类型，所以暂时没有处理
+    if (type === Fragment) {
+      const children = element.props.children;
+      return getContentFromReactNode(children);
+    } else {
+      return getContentFromReactElement(element);
+    }
   }
 }
 
@@ -114,6 +122,10 @@ export function getPathOfMatchedFibers(
     const [fiber, option] = fiberAndConfig;
     const { titleField, name } = option;
     const { memoizedProps } = fiber;
+    if (!titleField) {
+      path = `${path}{{${name}}}`;
+      continue;
+    }
     const title = memoizedProps?.[titleField];
     const titleStr = getContentFromReactNode(title);
     path = `${path}{{${name}&&${titleStr}}}`;
