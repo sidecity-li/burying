@@ -57,9 +57,14 @@ export default function generateExposureComponent({
 }: GenerateExposureContainerProps) {
   const eventQueue: Event[] = [];
 
-  const executeExposure = (event: Event, delay: number) => {
+  const executeExposure = (event: Event, delay: number, idx?: number) => {
     event.timer = setTimeout(() => {
       exposeFn(event.data);
+      
+      if(idx){
+        // 执行完 移除当前的 eventItem, 通过 下标来移除 (这里的 把 eventItem 设置为 null 不可以随便更改，如果数据下标塌陷，可能删除部分元素出现误删)
+        eventQueue[idx] = null
+      }
     }, delay);
 
     return event.timer;
@@ -81,15 +86,15 @@ export default function generateExposureComponent({
       return compareEvent(item.data, data) && date - item.date < delay;
     });
 
+    let eventId = null
     // 如果之前的 event 已经在 数组里面， 找到 itemEvent 不在删除，直接替换
     if (preciousSameEventIndex >= 0) {
       replaceEvent(preciousSameEventIndex, event);
     }else{
-      eventQueue.push(event);
+      eventId = eventQueue.push(event);
     }
 
-    let timer = executeExposure(event, delay);
-    return timer;
+    executeExposure(event, delay, eventId - 1);
   };
 
   return [
@@ -97,16 +102,13 @@ export default function generateExposureComponent({
       const debounceValue = debounce || defaultdebounce;
 
       useEffect(() => {
-        let timer = scheduleExposure(
+        scheduleExposure(
           {
             date: new Date().getTime(),
             data,
           },
           debounceValue
         );
-        return () => {
-          clearTimeout(timer)
-        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
 
