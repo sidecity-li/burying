@@ -65,13 +65,13 @@ export default function generateExposureComponent({
     return event.timer;
   };
 
-  const removeEvent = (i: number) => {
-    const event = eventQueue[i];
+  const replaceEvent = (i: number, event: Event) => {
+    const prevEvent = eventQueue[i];
 
-    if (event) {
-      clearTimeout(event.timer);
-      eventQueue.splice(i, 1);
+    if (prevEvent) {
+      clearTimeout(prevEvent.timer);
     }
+    eventQueue[i] = event;
   };
 
   const scheduleExposure = (event: Event, delay: number) => {
@@ -81,12 +81,14 @@ export default function generateExposureComponent({
       return compareEvent(item.data, data) && date - item.date < delay;
     });
 
+    // 如果之前的 event 已经在 数组里面， 找到 itemEvent 不在删除，直接替换
     if (preciousSameEventIndex >= 0) {
-      removeEvent(preciousSameEventIndex);
+      replaceEvent(preciousSameEventIndex, event);
+    }else{
+      eventQueue.push(event);
     }
 
     let timer = executeExposure(event, delay);
-    eventQueue.push(event);
     return timer;
   };
 
