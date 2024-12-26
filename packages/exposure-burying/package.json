@@ -1,6 +1,6 @@
 {
   "name": "@burying/exposure-burying",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "基于react的曝光埋点",
   "main": "dist/index.es.js",
   "keywords": [
