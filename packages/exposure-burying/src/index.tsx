@@ -61,7 +61,8 @@ export default function generateExposureComponent({
     event.timer = setTimeout(() => {
       exposeFn(event.data);
       
-
+      // 执行完成，先清理 当前的 timerId
+      clearTimeout(event.timer);
       // 从 eventQueue 中移除 已经执行过的 item Event
       removeExecutedFromQueue(event)
     }, delay);
