@@ -8,8 +8,7 @@
     "基于react Fiber的自动化埋点"
   ],
   "scripts": {
-    "build": "vite build && tsc",
-    "publish": "npm publish"
+    "build": "vite build && tsc"
   },
   "author": "sidecity.li",
   "license": "ISC",

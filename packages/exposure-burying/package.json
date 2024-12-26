@@ -9,8 +9,7 @@
     "IntersectionObserver"
   ],
   "scripts": {
-    "build": "vite build && tsc",
-    "publish": "npm publish"
+    "build": "vite build && tsc"
   },
   "author": "sidecity.li",
   "license": "ISC",

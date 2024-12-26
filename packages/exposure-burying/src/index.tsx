@@ -53,23 +53,38 @@ export default function generateExposureComponent({
   debounce: defaultdebounce,
   exposeFn,
   compareEvent = (data1, data2) =>
-    JSON.stringify(data1) === JSON.stringify(data2),
+   data1.type === data2.type,
 }: GenerateExposureContainerProps) {
   const eventQueue: Event[] = [];
 
   const executeExposure = (event: Event, delay: number) => {
     event.timer = setTimeout(() => {
       exposeFn(event.data);
+      
+      // 执行完成，先清理 当前的 timerId
+      clearTimeout(event.timer);
+      // 从 eventQueue 中移除 已经执行过的 item Event
+      removeExecutedFromQueue(event)
     }, delay);
+
+    return event.timer;
   };
 
-  const removeEvent = (i: number) => {
-    const event = eventQueue[i];
+  const removeExecutedFromQueue = (event: Event) => {
+    const executedId = eventQueue.findIndex((item) => {
+      return item === event;
+    });
 
-    if (event) {
-      clearTimeout(event.timer);
-      eventQueue.splice(i, 1);
+    executedId >= 0 && eventQueue.splice(executedId, 1)
+  };
+
+  const replaceEvent = (i: number, event: Event) => {
+    const prevEvent = eventQueue[i];
+
+    if (prevEvent) {
+      clearTimeout(prevEvent.timer);
     }
+    eventQueue[i] = event;
   };
 
   const scheduleExposure = (event: Event, delay: number) => {
@@ -79,12 +94,14 @@ export default function generateExposureComponent({
       return compareEvent(item.data, data) && date - item.date < delay;
     });
 
+    // 如果之前的 event 已经在 数组里面， 找到 itemEvent 不在删除，直接替换
     if (preciousSameEventIndex >= 0) {
-      removeEvent(preciousSameEventIndex);
+      replaceEvent(preciousSameEventIndex, event);
+    }else{
+      eventQueue.push(event);
     }
 
     executeExposure(event, delay);
-    eventQueue.push(event);
   };
 
   return [
