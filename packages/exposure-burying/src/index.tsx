@@ -53,7 +53,7 @@ export default function generateExposureComponent({
   debounce: defaultdebounce,
   exposeFn,
   compareEvent = (data1, data2) =>
-    JSON.stringify(data1) === JSON.stringify(data2),
+   data1.type === data2.type,
 }: GenerateExposureContainerProps) {
   const eventQueue: Event[] = [];
 
