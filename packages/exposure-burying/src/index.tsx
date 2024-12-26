@@ -52,19 +52,18 @@ const getDataSet = (data: DataType) => {
 export default function generateExposureComponent({
   debounce: defaultdebounce,
   exposeFn,
-  compareEvent = (data1, data2) =>
-   data1.type === data2.type,
+  compareEvent = (data1, data2) => data1.type === data2.type,
 }: GenerateExposureContainerProps) {
   const eventQueue: Event[] = [];
 
   const executeExposure = (event: Event, delay: number) => {
     event.timer = setTimeout(() => {
       exposeFn(event.data);
-      
+
       // 执行完成，先清理 当前的 timerId
       clearTimeout(event.timer);
       // 从 eventQueue 中移除 已经执行过的 item Event
-      removeExecutedFromQueue(event)
+      removeExecutedFromQueue(event);
     }, delay);
 
     return event.timer;
@@ -75,7 +74,9 @@ export default function generateExposureComponent({
       return item === event;
     });
 
-    executedId >= 0 && eventQueue.splice(executedId, 1)
+    if (executedId >= 0) {
+      eventQueue.splice(executedId, 1);
+    }
   };
 
   const replaceEvent = (i: number, event: Event) => {
@@ -97,7 +98,7 @@ export default function generateExposureComponent({
     // 如果之前的 event 已经在 数组里面， 找到 itemEvent 不在删除，直接替换
     if (preciousSameEventIndex >= 0) {
       replaceEvent(preciousSameEventIndex, event);
-    }else{
+    } else {
       eventQueue.push(event);
     }
 
